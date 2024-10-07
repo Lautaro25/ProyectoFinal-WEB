@@ -14,6 +14,7 @@ import javax.persistence.criteria.Root;
 import java.util.List;
 import javax.persistence.Persistence;
 import logica.cliente;
+import logica.usuario;
 import persistencia.exceptions.NonexistentEntityException;
 
 /**
@@ -40,7 +41,21 @@ public class clienteJpaController implements Serializable {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
+            usuario usuario = cliente.getUsuario();
+            if (usuario != null) {
+                usuario = em.getReference(usuario.getClass(), usuario.getId());
+                cliente.setUsuario(usuario);
+            }
             em.persist(cliente);
+            if (usuario != null) {
+                cliente oldClienteOfUsuario = usuario.getCliente();
+                if (oldClienteOfUsuario != null) {
+                    oldClienteOfUsuario.setUsuario(null);
+                    oldClienteOfUsuario = em.merge(oldClienteOfUsuario);
+                }
+                usuario.setCliente(cliente);
+                usuario = em.merge(usuario);
+            }
             em.getTransaction().commit();
         } finally {
             if (em != null) {
@@ -54,7 +69,27 @@ public class clienteJpaController implements Serializable {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
+            cliente persistentcliente = em.find(cliente.class, cliente.getId());
+            usuario usuarioOld = persistentcliente.getUsuario();
+            usuario usuarioNew = cliente.getUsuario();
+            if (usuarioNew != null) {
+                usuarioNew = em.getReference(usuarioNew.getClass(), usuarioNew.getId());
+                cliente.setUsuario(usuarioNew);
+            }
             cliente = em.merge(cliente);
+            if (usuarioOld != null && !usuarioOld.equals(usuarioNew)) {
+                usuarioOld.setCliente(null);
+                usuarioOld = em.merge(usuarioOld);
+            }
+            if (usuarioNew != null && !usuarioNew.equals(usuarioOld)) {
+                cliente oldClienteOfUsuario = usuarioNew.getCliente();
+                if (oldClienteOfUsuario != null) {
+                    oldClienteOfUsuario.setUsuario(null);
+                    oldClienteOfUsuario = em.merge(oldClienteOfUsuario);
+                }
+                usuarioNew.setCliente(cliente);
+                usuarioNew = em.merge(usuarioNew);
+            }
             em.getTransaction().commit();
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
@@ -83,6 +118,11 @@ public class clienteJpaController implements Serializable {
                 cliente.getId();
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The cliente with id " + id + " no longer exists.", enfe);
+            }
+            usuario usuario = cliente.getUsuario();
+            if (usuario != null) {
+                usuario.setCliente(null);
+                usuario = em.merge(usuario);
             }
             em.remove(cliente);
             em.getTransaction().commit();
