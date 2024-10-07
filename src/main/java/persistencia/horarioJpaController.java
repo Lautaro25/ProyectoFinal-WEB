@@ -11,6 +11,8 @@ import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import logica.reserva;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Persistence;
 import logica.horario;
@@ -36,11 +38,29 @@ public class horarioJpaController implements Serializable {
     }
 
     public void create(horario horario) {
+        if (horario.getReservas() == null) {
+            horario.setReservas(new ArrayList<reserva>());
+        }
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
+            List<reserva> attachedReservas = new ArrayList<reserva>();
+            for (reserva reservasreservaToAttach : horario.getReservas()) {
+                reservasreservaToAttach = em.getReference(reservasreservaToAttach.getClass(), reservasreservaToAttach.getId());
+                attachedReservas.add(reservasreservaToAttach);
+            }
+            horario.setReservas(attachedReservas);
             em.persist(horario);
+            for (reserva reservasreserva : horario.getReservas()) {
+                horario oldHorarioOfReservasreserva = reservasreserva.getHorario();
+                reservasreserva.setHorario(horario);
+                reservasreserva = em.merge(reservasreserva);
+                if (oldHorarioOfReservasreserva != null) {
+                    oldHorarioOfReservasreserva.getReservas().remove(reservasreserva);
+                    oldHorarioOfReservasreserva = em.merge(oldHorarioOfReservasreserva);
+                }
+            }
             em.getTransaction().commit();
         } finally {
             if (em != null) {
@@ -54,7 +74,34 @@ public class horarioJpaController implements Serializable {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
+            horario persistenthorario = em.find(horario.class, horario.getId());
+            List<reserva> reservasOld = persistenthorario.getReservas();
+            List<reserva> reservasNew = horario.getReservas();
+            List<reserva> attachedReservasNew = new ArrayList<reserva>();
+            for (reserva reservasNewreservaToAttach : reservasNew) {
+                reservasNewreservaToAttach = em.getReference(reservasNewreservaToAttach.getClass(), reservasNewreservaToAttach.getId());
+                attachedReservasNew.add(reservasNewreservaToAttach);
+            }
+            reservasNew = attachedReservasNew;
+            horario.setReservas(reservasNew);
             horario = em.merge(horario);
+            for (reserva reservasOldreserva : reservasOld) {
+                if (!reservasNew.contains(reservasOldreserva)) {
+                    reservasOldreserva.setHorario(null);
+                    reservasOldreserva = em.merge(reservasOldreserva);
+                }
+            }
+            for (reserva reservasNewreserva : reservasNew) {
+                if (!reservasOld.contains(reservasNewreserva)) {
+                    horario oldHorarioOfReservasNewreserva = reservasNewreserva.getHorario();
+                    reservasNewreserva.setHorario(horario);
+                    reservasNewreserva = em.merge(reservasNewreserva);
+                    if (oldHorarioOfReservasNewreserva != null && !oldHorarioOfReservasNewreserva.equals(horario)) {
+                        oldHorarioOfReservasNewreserva.getReservas().remove(reservasNewreserva);
+                        oldHorarioOfReservasNewreserva = em.merge(oldHorarioOfReservasNewreserva);
+                    }
+                }
+            }
             em.getTransaction().commit();
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
@@ -83,6 +130,11 @@ public class horarioJpaController implements Serializable {
                 horario.getId();
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The horario with id " + id + " no longer exists.", enfe);
+            }
+            List<reserva> reservas = horario.getReservas();
+            for (reserva reservasreserva : reservas) {
+                reservasreserva.setHorario(null);
+                reservasreserva = em.merge(reservasreserva);
             }
             em.remove(horario);
             em.getTransaction().commit();
