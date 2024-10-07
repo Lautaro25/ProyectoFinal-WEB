@@ -11,6 +11,8 @@ import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import logica.reserva;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Persistence;
 import logica.cancha;
@@ -25,8 +27,6 @@ public class canchaJpaController implements Serializable {
     public canchaJpaController() {
         emf = Persistence.createEntityManagerFactory("PracticaWeb_PU");
     }
-    
-    
 
     public canchaJpaController(EntityManagerFactory emf) {
         this.emf = emf;
@@ -38,11 +38,29 @@ public class canchaJpaController implements Serializable {
     }
 
     public void create(cancha cancha) {
+        if (cancha.getReservas() == null) {
+            cancha.setReservas(new ArrayList<reserva>());
+        }
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
+            List<reserva> attachedReservas = new ArrayList<reserva>();
+            for (reserva reservasreservaToAttach : cancha.getReservas()) {
+                reservasreservaToAttach = em.getReference(reservasreservaToAttach.getClass(), reservasreservaToAttach.getId());
+                attachedReservas.add(reservasreservaToAttach);
+            }
+            cancha.setReservas(attachedReservas);
             em.persist(cancha);
+            for (reserva reservasreserva : cancha.getReservas()) {
+                cancha oldCanchaOfReservasreserva = reservasreserva.getCancha();
+                reservasreserva.setCancha(cancha);
+                reservasreserva = em.merge(reservasreserva);
+                if (oldCanchaOfReservasreserva != null) {
+                    oldCanchaOfReservasreserva.getReservas().remove(reservasreserva);
+                    oldCanchaOfReservasreserva = em.merge(oldCanchaOfReservasreserva);
+                }
+            }
             em.getTransaction().commit();
         } finally {
             if (em != null) {
@@ -56,7 +74,34 @@ public class canchaJpaController implements Serializable {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
+            cancha persistentcancha = em.find(cancha.class, cancha.getId());
+            List<reserva> reservasOld = persistentcancha.getReservas();
+            List<reserva> reservasNew = cancha.getReservas();
+            List<reserva> attachedReservasNew = new ArrayList<reserva>();
+            for (reserva reservasNewreservaToAttach : reservasNew) {
+                reservasNewreservaToAttach = em.getReference(reservasNewreservaToAttach.getClass(), reservasNewreservaToAttach.getId());
+                attachedReservasNew.add(reservasNewreservaToAttach);
+            }
+            reservasNew = attachedReservasNew;
+            cancha.setReservas(reservasNew);
             cancha = em.merge(cancha);
+            for (reserva reservasOldreserva : reservasOld) {
+                if (!reservasNew.contains(reservasOldreserva)) {
+                    reservasOldreserva.setCancha(null);
+                    reservasOldreserva = em.merge(reservasOldreserva);
+                }
+            }
+            for (reserva reservasNewreserva : reservasNew) {
+                if (!reservasOld.contains(reservasNewreserva)) {
+                    cancha oldCanchaOfReservasNewreserva = reservasNewreserva.getCancha();
+                    reservasNewreserva.setCancha(cancha);
+                    reservasNewreserva = em.merge(reservasNewreserva);
+                    if (oldCanchaOfReservasNewreserva != null && !oldCanchaOfReservasNewreserva.equals(cancha)) {
+                        oldCanchaOfReservasNewreserva.getReservas().remove(reservasNewreserva);
+                        oldCanchaOfReservasNewreserva = em.merge(oldCanchaOfReservasNewreserva);
+                    }
+                }
+            }
             em.getTransaction().commit();
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
@@ -85,6 +130,11 @@ public class canchaJpaController implements Serializable {
                 cancha.getId();
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The cancha with id " + id + " no longer exists.", enfe);
+            }
+            List<reserva> reservas = cancha.getReservas();
+            for (reserva reservasreserva : reservas) {
+                reservasreserva.setCancha(null);
+                reservasreserva = em.merge(reservasreserva);
             }
             em.remove(cancha);
             em.getTransaction().commit();
