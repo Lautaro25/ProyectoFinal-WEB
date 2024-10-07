@@ -13,6 +13,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.util.List;
 import javax.persistence.Persistence;
+import logica.cliente;
 import logica.torneo;
 import logica.usuario;
 import persistencia.exceptions.NonexistentEntityException;
@@ -41,12 +42,26 @@ public class usuarioJpaController implements Serializable {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
+            cliente cliente = usuario.getCliente();
+            if (cliente != null) {
+                cliente = em.getReference(cliente.getClass(), cliente.getId());
+                usuario.setCliente(cliente);
+            }
             torneo torneo = usuario.getTorneo();
             if (torneo != null) {
                 torneo = em.getReference(torneo.getClass(), torneo.getId());
                 usuario.setTorneo(torneo);
             }
             em.persist(usuario);
+            if (cliente != null) {
+                usuario oldUsuarioOfCliente = cliente.getUsuario();
+                if (oldUsuarioOfCliente != null) {
+                    oldUsuarioOfCliente.setCliente(null);
+                    oldUsuarioOfCliente = em.merge(oldUsuarioOfCliente);
+                }
+                cliente.setUsuario(usuario);
+                cliente = em.merge(cliente);
+            }
             if (torneo != null) {
                 usuario oldUsuarioOfTorneo = torneo.getUsuario();
                 if (oldUsuarioOfTorneo != null) {
@@ -70,13 +85,32 @@ public class usuarioJpaController implements Serializable {
             em = getEntityManager();
             em.getTransaction().begin();
             usuario persistentusuario = em.find(usuario.class, usuario.getId());
+            cliente clienteOld = persistentusuario.getCliente();
+            cliente clienteNew = usuario.getCliente();
             torneo torneoOld = persistentusuario.getTorneo();
             torneo torneoNew = usuario.getTorneo();
+            if (clienteNew != null) {
+                clienteNew = em.getReference(clienteNew.getClass(), clienteNew.getId());
+                usuario.setCliente(clienteNew);
+            }
             if (torneoNew != null) {
                 torneoNew = em.getReference(torneoNew.getClass(), torneoNew.getId());
                 usuario.setTorneo(torneoNew);
             }
             usuario = em.merge(usuario);
+            if (clienteOld != null && !clienteOld.equals(clienteNew)) {
+                clienteOld.setUsuario(null);
+                clienteOld = em.merge(clienteOld);
+            }
+            if (clienteNew != null && !clienteNew.equals(clienteOld)) {
+                usuario oldUsuarioOfCliente = clienteNew.getUsuario();
+                if (oldUsuarioOfCliente != null) {
+                    oldUsuarioOfCliente.setCliente(null);
+                    oldUsuarioOfCliente = em.merge(oldUsuarioOfCliente);
+                }
+                clienteNew.setUsuario(usuario);
+                clienteNew = em.merge(clienteNew);
+            }
             if (torneoOld != null && !torneoOld.equals(torneoNew)) {
                 torneoOld.setUsuario(null);
                 torneoOld = em.merge(torneoOld);
@@ -118,6 +152,11 @@ public class usuarioJpaController implements Serializable {
                 usuario.getId();
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The usuario with id " + id + " no longer exists.", enfe);
+            }
+            cliente cliente = usuario.getCliente();
+            if (cliente != null) {
+                cliente.setUsuario(null);
+                cliente = em.merge(cliente);
             }
             torneo torneo = usuario.getTorneo();
             if (torneo != null) {
