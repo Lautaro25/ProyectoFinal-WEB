@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 @Entity
 public class cancha implements Serializable {
@@ -18,27 +19,38 @@ public class cancha implements Serializable {
     private int numCancha;
     private boolean disponibilidad;
     
+    @OneToOne(mappedBy = "cancha")
+    private cliente cliente;
+
     @OneToMany(mappedBy = "cancha")
-    private List<reserva> reservas;
+    private List<horario> horarios;
 
     public cancha() {
     }
 
-    public cancha(int id, int numCancha, boolean disponibilidad, List<reserva> reservas) {
+    public cancha(int id, int numCancha, boolean disponibilidad, cliente cliente, List<horario> horarios) {
         this.id = id;
         this.numCancha = numCancha;
         this.disponibilidad = disponibilidad;
-        this.reservas = reservas;
+        this.cliente = cliente;
+        this.horarios = horarios;
     }
 
-    public List<reserva> getReservas() {
-        return reservas;
+    public List<horario> getHorarios() {
+        return horarios;
     }
 
-    public void setReservas(List<reserva> reservas) {
-        this.reservas = reservas;
+    public void setHorarios(List<horario> horarios) {
+        this.horarios = horarios;
     }
 
+    public cliente getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(cliente cliente) {
+        this.cliente = cliente;
+    }
 
     public int getId() {
         return id;
