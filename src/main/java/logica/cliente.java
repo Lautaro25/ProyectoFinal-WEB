@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
 @Entity
@@ -21,17 +22,32 @@ public class cliente implements Serializable {
     @OneToOne(mappedBy = "cliente")
     private usuario usuario;
     
+    @OneToOne
+    @JoinColumn(name = "cancha_id", referencedColumnName = "id")
+    private cancha cancha;
+    
     public cliente() {
     }
 
-    public cliente(int id, int dni, int telefono, String nombre, String apellido, usuario usuario) {
+    public cliente(int id, int dni, int telefono, String nombre, String apellido, usuario usuario, cancha cancha) {
         this.id = id;
         this.dni = dni;
         this.telefono = telefono;
         this.nombre = nombre;
         this.apellido = apellido;
         this.usuario = usuario;
+        this.cancha = cancha;
     }
+
+    public cancha getCancha() {
+        return cancha;
+    }
+
+    public void setCancha(cancha cancha) {
+        this.cancha = cancha;
+    }
+
+
 
     public usuario getUsuario() {
         return usuario;
