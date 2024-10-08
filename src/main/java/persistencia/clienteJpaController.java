@@ -13,6 +13,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.util.List;
 import javax.persistence.Persistence;
+import logica.cancha;
 import logica.cliente;
 import logica.usuario;
 import persistencia.exceptions.NonexistentEntityException;
@@ -41,12 +42,26 @@ public class clienteJpaController implements Serializable {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
+            cancha cancha = cliente.getCancha();
+            if (cancha != null) {
+                cancha = em.getReference(cancha.getClass(), cancha.getId());
+                cliente.setCancha(cancha);
+            }
             usuario usuario = cliente.getUsuario();
             if (usuario != null) {
                 usuario = em.getReference(usuario.getClass(), usuario.getId());
                 cliente.setUsuario(usuario);
             }
             em.persist(cliente);
+            if (cancha != null) {
+                cliente oldClienteOfCancha = cancha.getCliente();
+                if (oldClienteOfCancha != null) {
+                    oldClienteOfCancha.setCancha(null);
+                    oldClienteOfCancha = em.merge(oldClienteOfCancha);
+                }
+                cancha.setCliente(cliente);
+                cancha = em.merge(cancha);
+            }
             if (usuario != null) {
                 cliente oldClienteOfUsuario = usuario.getCliente();
                 if (oldClienteOfUsuario != null) {
@@ -70,13 +85,32 @@ public class clienteJpaController implements Serializable {
             em = getEntityManager();
             em.getTransaction().begin();
             cliente persistentcliente = em.find(cliente.class, cliente.getId());
+            cancha canchaOld = persistentcliente.getCancha();
+            cancha canchaNew = cliente.getCancha();
             usuario usuarioOld = persistentcliente.getUsuario();
             usuario usuarioNew = cliente.getUsuario();
+            if (canchaNew != null) {
+                canchaNew = em.getReference(canchaNew.getClass(), canchaNew.getId());
+                cliente.setCancha(canchaNew);
+            }
             if (usuarioNew != null) {
                 usuarioNew = em.getReference(usuarioNew.getClass(), usuarioNew.getId());
                 cliente.setUsuario(usuarioNew);
             }
             cliente = em.merge(cliente);
+            if (canchaOld != null && !canchaOld.equals(canchaNew)) {
+                canchaOld.setCliente(null);
+                canchaOld = em.merge(canchaOld);
+            }
+            if (canchaNew != null && !canchaNew.equals(canchaOld)) {
+                cliente oldClienteOfCancha = canchaNew.getCliente();
+                if (oldClienteOfCancha != null) {
+                    oldClienteOfCancha.setCancha(null);
+                    oldClienteOfCancha = em.merge(oldClienteOfCancha);
+                }
+                canchaNew.setCliente(cliente);
+                canchaNew = em.merge(canchaNew);
+            }
             if (usuarioOld != null && !usuarioOld.equals(usuarioNew)) {
                 usuarioOld.setCliente(null);
                 usuarioOld = em.merge(usuarioOld);
@@ -118,6 +152,11 @@ public class clienteJpaController implements Serializable {
                 cliente.getId();
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The cliente with id " + id + " no longer exists.", enfe);
+            }
+            cancha cancha = cliente.getCancha();
+            if (cancha != null) {
+                cancha.setCliente(null);
+                cancha = em.merge(cancha);
             }
             usuario usuario = cliente.getUsuario();
             if (usuario != null) {
