@@ -11,7 +11,8 @@ import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import logica.reserva;
+import logica.cliente;
+import logica.horario;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Persistence;
@@ -27,6 +28,8 @@ public class canchaJpaController implements Serializable {
     public canchaJpaController() {
         emf = Persistence.createEntityManagerFactory("PracticaWeb_PU");
     }
+    
+    
 
     public canchaJpaController(EntityManagerFactory emf) {
         this.emf = emf;
@@ -38,27 +41,41 @@ public class canchaJpaController implements Serializable {
     }
 
     public void create(cancha cancha) {
-        if (cancha.getReservas() == null) {
-            cancha.setReservas(new ArrayList<reserva>());
+        if (cancha.getHorarios() == null) {
+            cancha.setHorarios(new ArrayList<horario>());
         }
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            List<reserva> attachedReservas = new ArrayList<reserva>();
-            for (reserva reservasreservaToAttach : cancha.getReservas()) {
-                reservasreservaToAttach = em.getReference(reservasreservaToAttach.getClass(), reservasreservaToAttach.getId());
-                attachedReservas.add(reservasreservaToAttach);
+            cliente cliente = cancha.getCliente();
+            if (cliente != null) {
+                cliente = em.getReference(cliente.getClass(), cliente.getId());
+                cancha.setCliente(cliente);
             }
-            cancha.setReservas(attachedReservas);
+            List<horario> attachedHorarios = new ArrayList<horario>();
+            for (horario horarioshorarioToAttach : cancha.getHorarios()) {
+                horarioshorarioToAttach = em.getReference(horarioshorarioToAttach.getClass(), horarioshorarioToAttach.getId());
+                attachedHorarios.add(horarioshorarioToAttach);
+            }
+            cancha.setHorarios(attachedHorarios);
             em.persist(cancha);
-            for (reserva reservasreserva : cancha.getReservas()) {
-                cancha oldCanchaOfReservasreserva = reservasreserva.getCancha();
-                reservasreserva.setCancha(cancha);
-                reservasreserva = em.merge(reservasreserva);
-                if (oldCanchaOfReservasreserva != null) {
-                    oldCanchaOfReservasreserva.getReservas().remove(reservasreserva);
-                    oldCanchaOfReservasreserva = em.merge(oldCanchaOfReservasreserva);
+            if (cliente != null) {
+                cancha oldCanchaOfCliente = cliente.getCancha();
+                if (oldCanchaOfCliente != null) {
+                    oldCanchaOfCliente.setCliente(null);
+                    oldCanchaOfCliente = em.merge(oldCanchaOfCliente);
+                }
+                cliente.setCancha(cancha);
+                cliente = em.merge(cliente);
+            }
+            for (horario horarioshorario : cancha.getHorarios()) {
+                cancha oldCanchaOfHorarioshorario = horarioshorario.getCancha();
+                horarioshorario.setCancha(cancha);
+                horarioshorario = em.merge(horarioshorario);
+                if (oldCanchaOfHorarioshorario != null) {
+                    oldCanchaOfHorarioshorario.getHorarios().remove(horarioshorario);
+                    oldCanchaOfHorarioshorario = em.merge(oldCanchaOfHorarioshorario);
                 }
             }
             em.getTransaction().commit();
@@ -75,30 +92,49 @@ public class canchaJpaController implements Serializable {
             em = getEntityManager();
             em.getTransaction().begin();
             cancha persistentcancha = em.find(cancha.class, cancha.getId());
-            List<reserva> reservasOld = persistentcancha.getReservas();
-            List<reserva> reservasNew = cancha.getReservas();
-            List<reserva> attachedReservasNew = new ArrayList<reserva>();
-            for (reserva reservasNewreservaToAttach : reservasNew) {
-                reservasNewreservaToAttach = em.getReference(reservasNewreservaToAttach.getClass(), reservasNewreservaToAttach.getId());
-                attachedReservasNew.add(reservasNewreservaToAttach);
+            cliente clienteOld = persistentcancha.getCliente();
+            cliente clienteNew = cancha.getCliente();
+            List<horario> horariosOld = persistentcancha.getHorarios();
+            List<horario> horariosNew = cancha.getHorarios();
+            if (clienteNew != null) {
+                clienteNew = em.getReference(clienteNew.getClass(), clienteNew.getId());
+                cancha.setCliente(clienteNew);
             }
-            reservasNew = attachedReservasNew;
-            cancha.setReservas(reservasNew);
+            List<horario> attachedHorariosNew = new ArrayList<horario>();
+            for (horario horariosNewhorarioToAttach : horariosNew) {
+                horariosNewhorarioToAttach = em.getReference(horariosNewhorarioToAttach.getClass(), horariosNewhorarioToAttach.getId());
+                attachedHorariosNew.add(horariosNewhorarioToAttach);
+            }
+            horariosNew = attachedHorariosNew;
+            cancha.setHorarios(horariosNew);
             cancha = em.merge(cancha);
-            for (reserva reservasOldreserva : reservasOld) {
-                if (!reservasNew.contains(reservasOldreserva)) {
-                    reservasOldreserva.setCancha(null);
-                    reservasOldreserva = em.merge(reservasOldreserva);
+            if (clienteOld != null && !clienteOld.equals(clienteNew)) {
+                clienteOld.setCancha(null);
+                clienteOld = em.merge(clienteOld);
+            }
+            if (clienteNew != null && !clienteNew.equals(clienteOld)) {
+                cancha oldCanchaOfCliente = clienteNew.getCancha();
+                if (oldCanchaOfCliente != null) {
+                    oldCanchaOfCliente.setCliente(null);
+                    oldCanchaOfCliente = em.merge(oldCanchaOfCliente);
+                }
+                clienteNew.setCancha(cancha);
+                clienteNew = em.merge(clienteNew);
+            }
+            for (horario horariosOldhorario : horariosOld) {
+                if (!horariosNew.contains(horariosOldhorario)) {
+                    horariosOldhorario.setCancha(null);
+                    horariosOldhorario = em.merge(horariosOldhorario);
                 }
             }
-            for (reserva reservasNewreserva : reservasNew) {
-                if (!reservasOld.contains(reservasNewreserva)) {
-                    cancha oldCanchaOfReservasNewreserva = reservasNewreserva.getCancha();
-                    reservasNewreserva.setCancha(cancha);
-                    reservasNewreserva = em.merge(reservasNewreserva);
-                    if (oldCanchaOfReservasNewreserva != null && !oldCanchaOfReservasNewreserva.equals(cancha)) {
-                        oldCanchaOfReservasNewreserva.getReservas().remove(reservasNewreserva);
-                        oldCanchaOfReservasNewreserva = em.merge(oldCanchaOfReservasNewreserva);
+            for (horario horariosNewhorario : horariosNew) {
+                if (!horariosOld.contains(horariosNewhorario)) {
+                    cancha oldCanchaOfHorariosNewhorario = horariosNewhorario.getCancha();
+                    horariosNewhorario.setCancha(cancha);
+                    horariosNewhorario = em.merge(horariosNewhorario);
+                    if (oldCanchaOfHorariosNewhorario != null && !oldCanchaOfHorariosNewhorario.equals(cancha)) {
+                        oldCanchaOfHorariosNewhorario.getHorarios().remove(horariosNewhorario);
+                        oldCanchaOfHorariosNewhorario = em.merge(oldCanchaOfHorariosNewhorario);
                     }
                 }
             }
@@ -131,10 +167,15 @@ public class canchaJpaController implements Serializable {
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The cancha with id " + id + " no longer exists.", enfe);
             }
-            List<reserva> reservas = cancha.getReservas();
-            for (reserva reservasreserva : reservas) {
-                reservasreserva.setCancha(null);
-                reservasreserva = em.merge(reservasreserva);
+            cliente cliente = cancha.getCliente();
+            if (cliente != null) {
+                cliente.setCancha(null);
+                cliente = em.merge(cliente);
+            }
+            List<horario> horarios = cancha.getHorarios();
+            for (horario horarioshorario : horarios) {
+                horarioshorario.setCancha(null);
+                horarioshorario = em.merge(horarioshorario);
             }
             em.remove(cancha);
             em.getTransaction().commit();
