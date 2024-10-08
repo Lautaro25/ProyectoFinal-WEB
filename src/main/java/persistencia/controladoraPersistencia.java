@@ -1,7 +1,10 @@
 package persistencia;
 
+import persistencia.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import logica.torneo;
+import logica.usuario;
 import logica.usuario;
 import persistencia.exceptions.NonexistentEntityException;
 
@@ -33,5 +36,25 @@ public class controladoraPersistencia {
             Logger.getLogger(controladoraPersistencia.class.getName()).log(Level.SEVERE, null, e);
         }
     
+    }
+
+    public void crearTorneo(torneo torneo) {
+        torneoJpa.create(torneo);
+    }
+
+    public void eliminarTorneo(int id) {
+        try {
+            torneoJpa.destroy(id);
+        } catch (NonexistentEntityException e) {
+            Logger.getLogger(controladoraPersistencia.class.getName()).log(Level.SEVERE, null, e);
+        }
+    }
+
+    public void modificarTorneo(torneo torneo) {
+        try {
+            torneoJpa.edit(torneo);
+        } catch (Exception e) {
+            Logger.getLogger(controladoraPersistencia.class.getName()).log(Level.SEVERE, null, e);
+        }
     }
 }
