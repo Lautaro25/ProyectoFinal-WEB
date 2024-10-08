@@ -11,6 +11,7 @@ import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import logica.cancha;
 import logica.reserva;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +46,11 @@ public class horarioJpaController implements Serializable {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
+            cancha cancha = horario.getCancha();
+            if (cancha != null) {
+                cancha = em.getReference(cancha.getClass(), cancha.getId());
+                horario.setCancha(cancha);
+            }
             List<reserva> attachedReservas = new ArrayList<reserva>();
             for (reserva reservasreservaToAttach : horario.getReservas()) {
                 reservasreservaToAttach = em.getReference(reservasreservaToAttach.getClass(), reservasreservaToAttach.getId());
@@ -52,6 +58,10 @@ public class horarioJpaController implements Serializable {
             }
             horario.setReservas(attachedReservas);
             em.persist(horario);
+            if (cancha != null) {
+                cancha.getHorarios().add(horario);
+                cancha = em.merge(cancha);
+            }
             for (reserva reservasreserva : horario.getReservas()) {
                 horario oldHorarioOfReservasreserva = reservasreserva.getHorario();
                 reservasreserva.setHorario(horario);
@@ -75,8 +85,14 @@ public class horarioJpaController implements Serializable {
             em = getEntityManager();
             em.getTransaction().begin();
             horario persistenthorario = em.find(horario.class, horario.getId());
+            cancha canchaOld = persistenthorario.getCancha();
+            cancha canchaNew = horario.getCancha();
             List<reserva> reservasOld = persistenthorario.getReservas();
             List<reserva> reservasNew = horario.getReservas();
+            if (canchaNew != null) {
+                canchaNew = em.getReference(canchaNew.getClass(), canchaNew.getId());
+                horario.setCancha(canchaNew);
+            }
             List<reserva> attachedReservasNew = new ArrayList<reserva>();
             for (reserva reservasNewreservaToAttach : reservasNew) {
                 reservasNewreservaToAttach = em.getReference(reservasNewreservaToAttach.getClass(), reservasNewreservaToAttach.getId());
@@ -85,6 +101,14 @@ public class horarioJpaController implements Serializable {
             reservasNew = attachedReservasNew;
             horario.setReservas(reservasNew);
             horario = em.merge(horario);
+            if (canchaOld != null && !canchaOld.equals(canchaNew)) {
+                canchaOld.getHorarios().remove(horario);
+                canchaOld = em.merge(canchaOld);
+            }
+            if (canchaNew != null && !canchaNew.equals(canchaOld)) {
+                canchaNew.getHorarios().add(horario);
+                canchaNew = em.merge(canchaNew);
+            }
             for (reserva reservasOldreserva : reservasOld) {
                 if (!reservasNew.contains(reservasOldreserva)) {
                     reservasOldreserva.setHorario(null);
@@ -130,6 +154,11 @@ public class horarioJpaController implements Serializable {
                 horario.getId();
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The horario with id " + id + " no longer exists.", enfe);
+            }
+            cancha cancha = horario.getCancha();
+            if (cancha != null) {
+                cancha.getHorarios().remove(horario);
+                cancha = em.merge(cancha);
             }
             List<reserva> reservas = horario.getReservas();
             for (reserva reservasreserva : reservas) {
