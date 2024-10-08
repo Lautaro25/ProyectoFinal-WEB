@@ -7,6 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -19,19 +21,34 @@ public class horario implements Serializable {
     @Temporal(TemporalType.DATE)
     private Date dia,horaInicio, horaFin;
     
+    @ManyToOne
+    @JoinColumn(name = "cancha_id", referencedColumnName = "id")
+    private cancha cancha;
+    
     @OneToMany(mappedBy = "horario")
     private List<reserva> reservas;
 
     public horario() {
     }
 
-    public horario(int id, Date dia, Date horaInicio, Date horaFin, List<reserva> reservas) {
+    public horario(int id, Date dia, Date horaInicio, Date horaFin, cancha cancha, List<reserva> reservas) {
         this.id = id;
         this.dia = dia;
         this.horaInicio = horaInicio;
         this.horaFin = horaFin;
+        this.cancha = cancha;
         this.reservas = reservas;
     }
+
+    public cancha getCancha() {
+        return cancha;
+    }
+
+    public void setCancha(cancha cancha) {
+        this.cancha = cancha;
+    }
+
+
 
     public List<reserva> getReservas() {
         return reservas;
