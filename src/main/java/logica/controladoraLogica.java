@@ -34,4 +34,31 @@ public class controladoraLogica {
     public void modificarTorneo(torneo torneo){
         controlPersis.modificarTorneo(torneo);    
     }
+
+    //CRUD Cliente
+    public void crearCliente(cliente cliente){
+        controlPersis.crearCliente(cliente);
+    }
+    
+    public void modificarCliente(cliente cliente){
+        controlPersis.modificarCliente(cliente);
+    }
+    
+    public void eliminarCliente(int id){
+        controlPersis.eliminarCliente(id);
+    }  
+    
+    //CRUD Cancha
+    public void crearCancha(cancha cancha){
+        controlPersis.crearCancha(cancha);
+    }
+    
+    public void modificarCancha(cancha cancha){
+        controlPersis.modificarCancha(cancha);
+    }
+    
+     public void eliminarCancha(int id){
+        controlPersis.eliminarCancha(id);
+    }
+
 }
