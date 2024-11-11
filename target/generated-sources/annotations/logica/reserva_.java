@@ -4,13 +4,20 @@ import java.util.Date;
 import javax.annotation.Generated;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
+import logica.cancha;
+import logica.usuario;
 
-@Generated(value="EclipseLink-2.7.12.v20230209-rNA", date="2024-10-04T20:19:53")
+@Generated(value="EclipseLink-2.7.12.v20230209-rNA", date="2024-11-11T18:44:57")
 @StaticMetamodel(reserva.class)
 public class reserva_ { 
 
-    public static volatile SingularAttribute<reserva, Date> fecha;
+    public static volatile SingularAttribute<reserva, String> nombreApellido;
+    public static volatile SingularAttribute<reserva, String> horario;
+    public static volatile SingularAttribute<reserva, cancha> cancha;
+    public static volatile SingularAttribute<reserva, usuario> usuario;
     public static volatile SingularAttribute<reserva, Integer> id;
-    public static volatile SingularAttribute<reserva, Integer> idUsuarios;
+    public static volatile SingularAttribute<reserva, String> telefono;
+    public static volatile SingularAttribute<reserva, Date> dia;
+    public static volatile SingularAttribute<reserva, String> dni;
 
 }

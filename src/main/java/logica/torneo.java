@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
 @Entity
@@ -14,19 +15,21 @@ public class torneo implements Serializable {
     @GeneratedValue(strategy=GenerationType.AUTO)
     private int id;
     @Basic
-    private String nombreEquipo, nombreJugador;
+    private String nombreEquipo, nombreJugador1, nombreJugador2;
 
     // Relación 1 a 1 con Usuario
-    @OneToOne(mappedBy = "torneo")
+    @OneToOne
+    @JoinColumn(name = "usuario_id")
     private usuario usuario;
     
     public torneo() {
     }
 
-    public torneo(int id, String nombreEquipo, String nombreJugador, usuario usuario) {
+    public torneo(int id, String nombreEquipo, String nombreJugador1, String nombreJugador2, usuario usuario) {
         this.id = id;
         this.nombreEquipo = nombreEquipo;
-        this.nombreJugador = nombreJugador;
+        this.nombreJugador1 = nombreJugador1;
+        this.nombreJugador2 = nombreJugador2;
         this.usuario = usuario;
     }
 
@@ -46,8 +49,12 @@ public class torneo implements Serializable {
         return nombreEquipo;
     }
 
-    public String getNombreJugador() {
-        return nombreJugador;
+    public String getNombreJugador1() {
+        return nombreJugador1;
+    }
+    
+    public String getNombreJugador2() {
+        return nombreJugador2;
     }
 
     public void setId(int id) {
@@ -58,8 +65,12 @@ public class torneo implements Serializable {
         this.nombreEquipo = nombreEquipo;
     }
 
-    public void setNombreJugador(String nombreJugador) {
-        this.nombreJugador = nombreJugador;
+    public void setNombreJugador1(String nombreJugador1) {
+        this.nombreJugador1 = nombreJugador1;
+    }
+    
+    public void setNombreJugador2(String nombreJugador2) {
+        this.nombreJugador2 = nombreJugador2;
     }
     
     

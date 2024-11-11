@@ -13,7 +13,8 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.util.List;
 import javax.persistence.Persistence;
-import logica.horario;
+import logica.usuario;
+import logica.cancha;
 import logica.reserva;
 import persistencia.exceptions.NonexistentEntityException;
 
@@ -23,8 +24,8 @@ import persistencia.exceptions.NonexistentEntityException;
  */
 public class reservaJpaController implements Serializable {
     
-    public reservaJpaController() {
-        emf = Persistence.createEntityManagerFactory("PracticaWeb_PU");
+    public reservaJpaController(){
+        emf = Persistence.createEntityManagerFactory("PracticaWebPrueba_PU");
     }
 
     public reservaJpaController(EntityManagerFactory emf) {
@@ -41,15 +42,24 @@ public class reservaJpaController implements Serializable {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            horario horario = reserva.getHorario();
-            if (horario != null) {
-                horario = em.getReference(horario.getClass(), horario.getId());
-                reserva.setHorario(horario);
+            usuario usuario = reserva.getUsuario();
+            if (usuario != null) {
+                usuario = em.getReference(usuario.getClass(), usuario.getId());
+                reserva.setUsuario(usuario);
+            }
+            cancha cancha = reserva.getCancha();
+            if (cancha != null) {
+                cancha = em.getReference(cancha.getClass(), cancha.getId());
+                reserva.setCancha(cancha);
             }
             em.persist(reserva);
-            if (horario != null) {
-                horario.getReservas().add(reserva);
-                horario = em.merge(horario);
+            if (usuario != null) {
+                usuario.getReservas().add(reserva);
+                usuario = em.merge(usuario);
+            }
+            if (cancha != null) {
+                cancha.getReservas().add(reserva);
+                cancha = em.merge(cancha);
             }
             em.getTransaction().commit();
         } finally {
@@ -65,20 +75,34 @@ public class reservaJpaController implements Serializable {
             em = getEntityManager();
             em.getTransaction().begin();
             reserva persistentreserva = em.find(reserva.class, reserva.getId());
-            horario horarioOld = persistentreserva.getHorario();
-            horario horarioNew = reserva.getHorario();
-            if (horarioNew != null) {
-                horarioNew = em.getReference(horarioNew.getClass(), horarioNew.getId());
-                reserva.setHorario(horarioNew);
+            usuario usuarioOld = persistentreserva.getUsuario();
+            usuario usuarioNew = reserva.getUsuario();
+            cancha canchaOld = persistentreserva.getCancha();
+            cancha canchaNew = reserva.getCancha();
+            if (usuarioNew != null) {
+                usuarioNew = em.getReference(usuarioNew.getClass(), usuarioNew.getId());
+                reserva.setUsuario(usuarioNew);
+            }
+            if (canchaNew != null) {
+                canchaNew = em.getReference(canchaNew.getClass(), canchaNew.getId());
+                reserva.setCancha(canchaNew);
             }
             reserva = em.merge(reserva);
-            if (horarioOld != null && !horarioOld.equals(horarioNew)) {
-                horarioOld.getReservas().remove(reserva);
-                horarioOld = em.merge(horarioOld);
+            if (usuarioOld != null && !usuarioOld.equals(usuarioNew)) {
+                usuarioOld.getReservas().remove(reserva);
+                usuarioOld = em.merge(usuarioOld);
             }
-            if (horarioNew != null && !horarioNew.equals(horarioOld)) {
-                horarioNew.getReservas().add(reserva);
-                horarioNew = em.merge(horarioNew);
+            if (usuarioNew != null && !usuarioNew.equals(usuarioOld)) {
+                usuarioNew.getReservas().add(reserva);
+                usuarioNew = em.merge(usuarioNew);
+            }
+            if (canchaOld != null && !canchaOld.equals(canchaNew)) {
+                canchaOld.getReservas().remove(reserva);
+                canchaOld = em.merge(canchaOld);
+            }
+            if (canchaNew != null && !canchaNew.equals(canchaOld)) {
+                canchaNew.getReservas().add(reserva);
+                canchaNew = em.merge(canchaNew);
             }
             em.getTransaction().commit();
         } catch (Exception ex) {
@@ -109,10 +133,15 @@ public class reservaJpaController implements Serializable {
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The reserva with id " + id + " no longer exists.", enfe);
             }
-            horario horario = reserva.getHorario();
-            if (horario != null) {
-                horario.getReservas().remove(reserva);
-                horario = em.merge(horario);
+            usuario usuario = reserva.getUsuario();
+            if (usuario != null) {
+                usuario.getReservas().remove(reserva);
+                usuario = em.merge(usuario);
+            }
+            cancha cancha = reserva.getCancha();
+            if (cancha != null) {
+                cancha.getReservas().remove(reserva);
+                cancha = em.merge(cancha);
             }
             em.remove(reserva);
             em.getTransaction().commit();

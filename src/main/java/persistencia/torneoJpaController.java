@@ -23,8 +23,8 @@ import persistencia.exceptions.NonexistentEntityException;
  */
 public class torneoJpaController implements Serializable {
     
-    public torneoJpaController() {
-        emf = Persistence.createEntityManagerFactory("PracticaWeb_PU");
+    public torneoJpaController(){
+        emf = Persistence.createEntityManagerFactory("PracticaWebPrueba_PU");
     }
 
     public torneoJpaController(EntityManagerFactory emf) {

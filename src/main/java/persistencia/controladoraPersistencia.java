@@ -1,22 +1,22 @@
 package persistencia;
 
-import persistencia.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import logica.cancha;
-import logica.cliente;
+import logica.reserva;
+import logica.tipoUsuario;
 import logica.torneo;
-import logica.usuario;
 import logica.usuario;
 import persistencia.exceptions.NonexistentEntityException;
 
 public class controladoraPersistencia {
     canchaJpaController canchaJpa = new canchaJpaController();
-    clienteJpaController clienteJpa = new clienteJpaController();
-    horarioJpaController horarioJpa = new horarioJpaController();
     reservaJpaController reservaJpa = new reservaJpaController();
     torneoJpaController torneoJpa = new torneoJpaController();
     usuarioJpaController usuarioJpa = new usuarioJpaController();
+    tipoUsuarioJpaController tipoUsuarioJpa = new tipoUsuarioJpaController();
     
     //CRUD Usuario
     
@@ -42,47 +42,43 @@ public class controladoraPersistencia {
     
     }
     
+    public List<usuario> getUsuario(){
+        return usuarioJpa.findusuarioEntities();
+    }    
+    
+    public usuario obtenerUsuarioPorId(int id) {
+    return usuarioJpa.findusuario(id); // Esto asume que el método existe en usuarioJpaController
+}
+
+    
     //CRUD Torneo
-    public void crearTorneo(torneo torneo) {
-        torneoJpa.create(torneo);
+     public void crearTorneo(torneo torn) {
+      torneoJpa.create(torn);
     }
-
-    public void eliminarTorneo(int id) {
-        try {
-            torneoJpa.destroy(id);
-        } catch (NonexistentEntityException e) {
-            Logger.getLogger(controladoraPersistencia.class.getName()).log(Level.SEVERE, null, e);
-        }
+     
+     public torneo traerTorneo(int idModificar) {
+        return torneoJpa.findtorneo(idModificar);
     }
-
-    public void modificarTorneo(torneo torneo) {
-        try {
-            torneoJpa.edit(torneo);
-        } catch (Exception e) {
-            Logger.getLogger(controladoraPersistencia.class.getName()).log(Level.SEVERE, null, e);
-        }
+     
+      public List<torneo> mostrarTorneo() {
+        return torneoJpa.findtorneoEntities();
     }
     
-    //CRUD Cliente
-    public void crearCliente(cliente cliente) {
-      clienteJpa.create(cliente);
-    }
-    
-    public void modificarCliente(cliente cliente){
+    public void modificarTorneo(torneo torn){
         try { 
-            clienteJpa.edit(cliente);
+            torneoJpa.edit(torn);
     } catch (Exception ex){
         Logger.getLogger(controladoraPersistencia.class.getName()).log(Level.SEVERE, null, ex);
     }
     }
-
-    public void eliminarCliente(int id) {
+    
+    public void eliminarTorneo(int id) {
        try {
-           clienteJpa.destroy(id);
+           torneoJpa.destroy(id);
        } catch (NonexistentEntityException ex) {
            Logger.getLogger(controladoraPersistencia.class.getName()).log(Level.SEVERE, null, ex);
        }
-    }   
+    }
     
     //CRUD Cancha
     public void crearCancha(cancha cancha) {
@@ -104,6 +100,63 @@ public class controladoraPersistencia {
            Logger.getLogger(controladoraPersistencia.class.getName()).log(Level.SEVERE, null, ex);
        }
     } 
+    
+    public List<cancha> encontrarCancha() {
+        return canchaJpa.findcanchaEntities();
+    }
 
+    
+    
+    //CRUD Reserva
+    public void crearReserva(reserva reserva) {
+        reservaJpa.create(reserva);
+    }
 
+    public void eliminarReserva(int id) {
+           try {
+            reservaJpa.destroy(id);   
+        } catch (NonexistentEntityException e) {
+            Logger.getLogger(controladoraPersistencia.class.getName()).log(Level.SEVERE, null, e);
+        }
+    }
+
+ 
+    public void modificarReserva(reserva reserva) {
+    try {
+            reservaJpa.edit(reserva);
+        } catch (Exception e) {
+            Logger.getLogger(controladoraPersistencia.class.getName()).log(Level.SEVERE, null, e);
+        }
+    }
+    
+    public List<reserva> getReserva() {
+        return reservaJpa.findreservaEntities();
+    }
+
+    
+    
+    
+    //CRUD TipoUsuario
+    public void crearTipoUsuario(tipoUsuario tipoUsuario) {
+        tipoUsuarioJpa.create(tipoUsuario);
+    }
+
+    public void eliminarTipoUsuario(int id) {
+           try {
+            tipoUsuarioJpa.destroy(id);   
+        } catch (NonexistentEntityException e) {
+            Logger.getLogger(controladoraPersistencia.class.getName()).log(Level.SEVERE, null, e);
+        }
+    }
+
+ 
+    public void modificarTipoUsuario(tipoUsuario tipoUsuario) {
+    try {
+            tipoUsuarioJpa.edit(tipoUsuario);
+        } catch (Exception e) {
+            Logger.getLogger(controladoraPersistencia.class.getName()).log(Level.SEVERE, null, e);
+        }
+    }
+    
+    
 }

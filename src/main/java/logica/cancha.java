@@ -8,73 +8,63 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 
 @Entity
 public class cancha implements Serializable {
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private int id;
     @Basic
     private int numCancha;
     private boolean disponibilidad;
     
-    @OneToOne(mappedBy = "cancha")
-    private cliente cliente;
-
+    //Relación con Reserva
     @OneToMany(mappedBy = "cancha")
-    private List<horario> horarios;
+    private List<reserva> reservas;
+
 
     public cancha() {
     }
 
-    public cancha(int id, int numCancha, boolean disponibilidad, cliente cliente, List<horario> horarios) {
+    public cancha(int id, int numCancha, boolean disponibilidad, List<reserva> reservas) {
         this.id = id;
         this.numCancha = numCancha;
         this.disponibilidad = disponibilidad;
-        this.cliente = cliente;
-        this.horarios = horarios;
-    }
-
-    public List<horario> getHorarios() {
-        return horarios;
-    }
-
-    public void setHorarios(List<horario> horarios) {
-        this.horarios = horarios;
-    }
-
-    public cliente getCliente() {
-        return cliente;
-    }
-
-    public void setCliente(cliente cliente) {
-        this.cliente = cliente;
+        this.reservas = reservas;
     }
 
     public int getId() {
         return id;
     }
 
-    public int getNumCancha() {
-        return numCancha;
-    }
-
-    public boolean isDisponibilidad() {
-        return disponibilidad;
-    }
-
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getNumCancha() {
+        return numCancha;
     }
 
     public void setNumCancha(int numCancha) {
         this.numCancha = numCancha;
     }
 
+    public boolean isDisponibilidad() {
+        return disponibilidad;
+    }
+
     public void setDisponibilidad(boolean disponibilidad) {
         this.disponibilidad = disponibilidad;
     }
-    
+
+    public List<reserva> getReservas() {
+        return reservas;
+    }
+
+    public void setReservas(List<reserva> reservas) {
+        this.reservas = reservas;
+    }
+
+   
     
 }

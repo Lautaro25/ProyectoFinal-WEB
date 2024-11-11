@@ -8,7 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -18,55 +18,104 @@ public class reserva implements Serializable {
     @GeneratedValue(strategy=GenerationType.AUTO)
     private int id;
     @Basic
-    private int idUsuarios;
+    String nombreApellido, telefono, dni, horario;
     @Temporal(TemporalType.DATE)
-    private Date fecha;
+    private Date dia;
 
-    @OneToOne
-    @JoinColumn(name = "horario_id", referencedColumnName = "id")
-    private horario horario;
+    //Relación con Usuario
+    @ManyToOne
+    @JoinColumn(name = "usuario_id", referencedColumnName = "id")
+    private usuario usuario;
+    
+    //Relación con Cancha
+    @ManyToOne
+    @JoinColumn(name = "cancha_id", referencedColumnName = "id")
+    private cancha cancha;
 
     public reserva() {
     }
 
-    public reserva(int id, int idUsuarios, Date fecha, horario horario) {
+    public reserva(int id, String nombreApellido, String telefono, String dni, String horario, Date dia, usuario usuario, cancha cancha) {
         this.id = id;
-        this.idUsuarios = idUsuarios;
-        this.fecha = fecha;
+        this.nombreApellido = nombreApellido;
+        this.telefono = telefono;
+        this.dni = dni;
         this.horario = horario;
-    }
-
-    public horario getHorario() {
-        return horario;
-    }
-
-    public void setHorario(horario horario) {
-        this.horario = horario;
+        this.dia = dia;
+        this.usuario = usuario;
+        this.cancha = cancha;
     }
 
     public int getId() {
         return id;
     }
 
-    public int getIdUsuarios() {
-        return idUsuarios;
-    }
-
-    public Date getFecha() {
-        return fecha;
-    }
-
     public void setId(int id) {
         this.id = id;
     }
 
-    public void setIdUsuarios(int idUsuarios) {
-        this.idUsuarios = idUsuarios;
+    public String getNombreApellido() {
+        return nombreApellido;
     }
 
-    public void setFecha(Date fecha) {
-        this.fecha = fecha;
+    public void setNombreApellido(String nombreApellido) {
+        this.nombreApellido = nombreApellido;
     }
+
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
+    }
+
+    public String getDni() {
+        return dni;
+    }
+
+    public void setDni(String dni) {
+        this.dni = dni;
+    }
+
+    public String getHorario() {
+        return horario;
+    }
+
+    public void setHorario(String horario) {
+        this.horario = horario;
+    }
+
+    public Date getDia() {
+        return dia;
+    }
+
+    public void setDia(Date dia) {
+        this.dia = dia;
+    }
+
+    public usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(usuario usuario) {
+        this.usuario = usuario;
+    }
+
+    public cancha getCancha() {
+        return cancha;
+    }
+
+    public void setCancha(cancha cancha) {
+        this.cancha = cancha;
+    }
+
+
+   
+    
+
+    
+
     
     
 }

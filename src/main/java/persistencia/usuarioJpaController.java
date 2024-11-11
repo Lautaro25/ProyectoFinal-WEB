@@ -11,10 +11,12 @@ import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import logica.torneo;
+import logica.tipoUsuario;
+import logica.reserva;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Persistence;
-import logica.cliente;
-import logica.torneo;
 import logica.usuario;
 import persistencia.exceptions.NonexistentEntityException;
 
@@ -24,8 +26,8 @@ import persistencia.exceptions.NonexistentEntityException;
  */
 public class usuarioJpaController implements Serializable {
     
-    public usuarioJpaController() {
-        emf = Persistence.createEntityManagerFactory("PracticaWeb_PU");
+    public usuarioJpaController(){
+        emf = Persistence.createEntityManagerFactory("PracticaWebPrueba_PU");
     }
 
     public usuarioJpaController(EntityManagerFactory emf) {
@@ -38,30 +40,30 @@ public class usuarioJpaController implements Serializable {
     }
 
     public void create(usuario usuario) {
+        if (usuario.getReservas() == null) {
+            usuario.setReservas(new ArrayList<reserva>());
+        }
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            cliente cliente = usuario.getCliente();
-            if (cliente != null) {
-                cliente = em.getReference(cliente.getClass(), cliente.getId());
-                usuario.setCliente(cliente);
-            }
             torneo torneo = usuario.getTorneo();
             if (torneo != null) {
                 torneo = em.getReference(torneo.getClass(), torneo.getId());
                 usuario.setTorneo(torneo);
             }
-            em.persist(usuario);
-            if (cliente != null) {
-                usuario oldUsuarioOfCliente = cliente.getUsuario();
-                if (oldUsuarioOfCliente != null) {
-                    oldUsuarioOfCliente.setCliente(null);
-                    oldUsuarioOfCliente = em.merge(oldUsuarioOfCliente);
-                }
-                cliente.setUsuario(usuario);
-                cliente = em.merge(cliente);
+            tipoUsuario tipoUsuario = usuario.getTipoUsuario();
+            if (tipoUsuario != null) {
+                tipoUsuario = em.getReference(tipoUsuario.getClass(), tipoUsuario.getId());
+                usuario.setTipoUsuario(tipoUsuario);
             }
+            List<reserva> attachedReservas = new ArrayList<reserva>();
+            for (reserva reservasreservaToAttach : usuario.getReservas()) {
+                reservasreservaToAttach = em.getReference(reservasreservaToAttach.getClass(), reservasreservaToAttach.getId());
+                attachedReservas.add(reservasreservaToAttach);
+            }
+            usuario.setReservas(attachedReservas);
+            em.persist(usuario);
             if (torneo != null) {
                 usuario oldUsuarioOfTorneo = torneo.getUsuario();
                 if (oldUsuarioOfTorneo != null) {
@@ -70,6 +72,24 @@ public class usuarioJpaController implements Serializable {
                 }
                 torneo.setUsuario(usuario);
                 torneo = em.merge(torneo);
+            }
+            if (tipoUsuario != null) {
+                usuario oldUsuarioOfTipoUsuario = tipoUsuario.getUsuario();
+                if (oldUsuarioOfTipoUsuario != null) {
+                    oldUsuarioOfTipoUsuario.setTipoUsuario(null);
+                    oldUsuarioOfTipoUsuario = em.merge(oldUsuarioOfTipoUsuario);
+                }
+                tipoUsuario.setUsuario(usuario);
+                tipoUsuario = em.merge(tipoUsuario);
+            }
+            for (reserva reservasreserva : usuario.getReservas()) {
+                usuario oldUsuarioOfReservasreserva = reservasreserva.getUsuario();
+                reservasreserva.setUsuario(usuario);
+                reservasreserva = em.merge(reservasreserva);
+                if (oldUsuarioOfReservasreserva != null) {
+                    oldUsuarioOfReservasreserva.getReservas().remove(reservasreserva);
+                    oldUsuarioOfReservasreserva = em.merge(oldUsuarioOfReservasreserva);
+                }
             }
             em.getTransaction().commit();
         } finally {
@@ -85,32 +105,28 @@ public class usuarioJpaController implements Serializable {
             em = getEntityManager();
             em.getTransaction().begin();
             usuario persistentusuario = em.find(usuario.class, usuario.getId());
-            cliente clienteOld = persistentusuario.getCliente();
-            cliente clienteNew = usuario.getCliente();
             torneo torneoOld = persistentusuario.getTorneo();
             torneo torneoNew = usuario.getTorneo();
-            if (clienteNew != null) {
-                clienteNew = em.getReference(clienteNew.getClass(), clienteNew.getId());
-                usuario.setCliente(clienteNew);
-            }
+            tipoUsuario tipoUsuarioOld = persistentusuario.getTipoUsuario();
+            tipoUsuario tipoUsuarioNew = usuario.getTipoUsuario();
+            List<reserva> reservasOld = persistentusuario.getReservas();
+            List<reserva> reservasNew = usuario.getReservas();
             if (torneoNew != null) {
                 torneoNew = em.getReference(torneoNew.getClass(), torneoNew.getId());
                 usuario.setTorneo(torneoNew);
             }
+            if (tipoUsuarioNew != null) {
+                tipoUsuarioNew = em.getReference(tipoUsuarioNew.getClass(), tipoUsuarioNew.getId());
+                usuario.setTipoUsuario(tipoUsuarioNew);
+            }
+            List<reserva> attachedReservasNew = new ArrayList<reserva>();
+            for (reserva reservasNewreservaToAttach : reservasNew) {
+                reservasNewreservaToAttach = em.getReference(reservasNewreservaToAttach.getClass(), reservasNewreservaToAttach.getId());
+                attachedReservasNew.add(reservasNewreservaToAttach);
+            }
+            reservasNew = attachedReservasNew;
+            usuario.setReservas(reservasNew);
             usuario = em.merge(usuario);
-            if (clienteOld != null && !clienteOld.equals(clienteNew)) {
-                clienteOld.setUsuario(null);
-                clienteOld = em.merge(clienteOld);
-            }
-            if (clienteNew != null && !clienteNew.equals(clienteOld)) {
-                usuario oldUsuarioOfCliente = clienteNew.getUsuario();
-                if (oldUsuarioOfCliente != null) {
-                    oldUsuarioOfCliente.setCliente(null);
-                    oldUsuarioOfCliente = em.merge(oldUsuarioOfCliente);
-                }
-                clienteNew.setUsuario(usuario);
-                clienteNew = em.merge(clienteNew);
-            }
             if (torneoOld != null && !torneoOld.equals(torneoNew)) {
                 torneoOld.setUsuario(null);
                 torneoOld = em.merge(torneoOld);
@@ -123,6 +139,36 @@ public class usuarioJpaController implements Serializable {
                 }
                 torneoNew.setUsuario(usuario);
                 torneoNew = em.merge(torneoNew);
+            }
+            if (tipoUsuarioOld != null && !tipoUsuarioOld.equals(tipoUsuarioNew)) {
+                tipoUsuarioOld.setUsuario(null);
+                tipoUsuarioOld = em.merge(tipoUsuarioOld);
+            }
+            if (tipoUsuarioNew != null && !tipoUsuarioNew.equals(tipoUsuarioOld)) {
+                usuario oldUsuarioOfTipoUsuario = tipoUsuarioNew.getUsuario();
+                if (oldUsuarioOfTipoUsuario != null) {
+                    oldUsuarioOfTipoUsuario.setTipoUsuario(null);
+                    oldUsuarioOfTipoUsuario = em.merge(oldUsuarioOfTipoUsuario);
+                }
+                tipoUsuarioNew.setUsuario(usuario);
+                tipoUsuarioNew = em.merge(tipoUsuarioNew);
+            }
+            for (reserva reservasOldreserva : reservasOld) {
+                if (!reservasNew.contains(reservasOldreserva)) {
+                    reservasOldreserva.setUsuario(null);
+                    reservasOldreserva = em.merge(reservasOldreserva);
+                }
+            }
+            for (reserva reservasNewreserva : reservasNew) {
+                if (!reservasOld.contains(reservasNewreserva)) {
+                    usuario oldUsuarioOfReservasNewreserva = reservasNewreserva.getUsuario();
+                    reservasNewreserva.setUsuario(usuario);
+                    reservasNewreserva = em.merge(reservasNewreserva);
+                    if (oldUsuarioOfReservasNewreserva != null && !oldUsuarioOfReservasNewreserva.equals(usuario)) {
+                        oldUsuarioOfReservasNewreserva.getReservas().remove(reservasNewreserva);
+                        oldUsuarioOfReservasNewreserva = em.merge(oldUsuarioOfReservasNewreserva);
+                    }
+                }
             }
             em.getTransaction().commit();
         } catch (Exception ex) {
@@ -153,15 +199,20 @@ public class usuarioJpaController implements Serializable {
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The usuario with id " + id + " no longer exists.", enfe);
             }
-            cliente cliente = usuario.getCliente();
-            if (cliente != null) {
-                cliente.setUsuario(null);
-                cliente = em.merge(cliente);
-            }
             torneo torneo = usuario.getTorneo();
             if (torneo != null) {
                 torneo.setUsuario(null);
                 torneo = em.merge(torneo);
+            }
+            tipoUsuario tipoUsuario = usuario.getTipoUsuario();
+            if (tipoUsuario != null) {
+                tipoUsuario.setUsuario(null);
+                tipoUsuario = em.merge(tipoUsuario);
+            }
+            List<reserva> reservas = usuario.getReservas();
+            for (reserva reservasreserva : reservas) {
+                reservasreserva.setUsuario(null);
+                reservasreserva = em.merge(reservasreserva);
             }
             em.remove(usuario);
             em.getTransaction().commit();
