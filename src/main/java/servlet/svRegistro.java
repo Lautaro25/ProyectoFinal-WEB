@@ -88,7 +88,7 @@ if (email.equals("lautarovillabona.ar@gmail.com")) {
         ctrlLogica.crearUsuario(usu);
         estadoRegistro = 1;
         session.setAttribute("estadoRegistro", estadoRegistro);
-        response.sendRedirect("registro.jsp");
+        response.sendRedirect("Login.jsp");
     } catch (Exception e) {
         // Manejo de error
         request.setAttribute("errorMessage", "Error al crear el usuario: " + e.getMessage());

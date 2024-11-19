@@ -6,7 +6,7 @@
 
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
@@ -77,7 +77,7 @@
                             </li>
                         <% } else { %>
                              <li class="nav-item">
-                                <a class="nav-link" href="contaco.html"><i class="fas fa-users"></i>Contacta con
+                                <a class="nav-link" href="contaco.jsp"><i class="fas fa-users"></i>Contacta con
                                     nosotros</a>
                             </li>
                             <li class="nav-item menu_nav-select with-acount">

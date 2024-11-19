@@ -3,12 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro</title>
+    <title>Formulario de Registro</title>
     <script src="https://kit.fontawesome.com/2f7feb84f1.js" crossorigin="anonymous"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="CSS/index.css">
-   
     <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
     <link rel="icon" href="Img/iconoWeb2.ico">
 </head>
@@ -60,29 +58,37 @@
                         // Limpiar los atributos para que no persistan en la siguiente solicitud
                         session.removeAttribute("estadoRegistro");
                     %>
-        <div class="login_formulario">
-            <form id="register-form" action="/svRegistro" method="POST">
+         <div class="login_formulario">
             <h2 class="login_formulario-h2">Registro</h2>
+            <form action="svRegistro" id="register-form" class="needs-validation" method="post" novalidate>
                 <c:if test="${not empty errorMessage}">
                     <p style="color: red; text-align: center; font-size: 18px">${errorMessage}</p>
                 </c:if>
-            <div class="login_formulario-inputs">
-                <input type="email" id="email" name="email" placeholder="Ingrese su email" required>
-                <input type="text" id="username" name="nombre" placeholder="Ingrese su nombre de usuario" required>
-                <input type="password" id="password" name="contrasenia" placeholder="Ingrese su contraseña" required >
-                <input type="password" id="confirm-password" placeholder="Confirme su contraseña" required>
-            </div>
-
-            <div class="login_desvio">
-                <p>¿Ya tienes cuenta? Iniciar Sesión </p><a href="Login.jsp">aquí­.</a>
-            </div>
+                           <div class="login_formulario-inputs">
+                    <input type="email" id="email" name="email" class="form-control" placeholder="Ingrese su email" required>
+                    <div class="invalid-feedback">Por favor ingrese un correo válido.</div>
+                    <input type="text" id="username" name="nombre" class="form-control" placeholder="Ingrese su nombre y apellido" required>
+                    <div class="invalid-feedback">Por favor ingrese su nombre y apellido.</div>
             
-                <button class="login_formulario-boton" type="submit">Registrarse</button>
-            </form>
-                <form action="index.jsp">
-                <button class="login_formulario-boton" type="submit">Regresar</button>
-                </form>
+                    <div class="password-container">
+                        <input type="password" id="password" name="contrasenia" class="form-control" placeholder="Ingrese su contraseña" required minlength="8">
+                        <div class="invalid-feedback">La contraseña debe tener al menos 8 caracteres.</div>
+                    </div>
+            
+                    <div class="password-container">
+                        <input type="password" id="confirm-password" name="confirm-password" class="form-control" placeholder="Confirme su contraseña" required>
+                        <div class="invalid-feedback">Las contraseñas no coinciden.</div>
+                    </div>
+                </div>
 
+                <div class="login_desvio">
+                    <p>¿Ya tienes cuenta? Inicia sesión <a href="Login.jsp">aquí.</a></p>
+                </div>
+
+                <button class="login_formulario-boton btn btn-primary" type="submit">Registrarse</button>
+            </form>
+
+            <button class="login_formulario-boton btn btn-secondary" type="button" onclick="window.location.href='index.jsp'">Regresar</button>
         </div>
     </main>
     <footer class="login_footer">

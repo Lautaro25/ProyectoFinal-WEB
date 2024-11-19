@@ -4,9 +4,10 @@
     Author     : lauta
 --%>
 
+<%@page import="logica.usuario"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
@@ -27,7 +28,7 @@
         <nav class="navbar navbar-expand-lg">
             <div class="container-fluid">
                 <div class="menu_header-img"><img src="Img/iconoWeb2.ico" alt=""></div>
-                <a class="navbar-brand" href="Menu.html">
+                <a class="navbar-brand" href="#">
                     <h2>Página Principal</h2>
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu"
@@ -37,7 +38,7 @@
                 <div class="collapse navbar-collapse justify-content-end" id="menu">
                     <ul class="navbar-nav">
                         <li class="nav-item">
-                            <a class="nav-link" href="contaco.html"><i class="fas fa-users"></i>Contacta con
+                            <a class="nav-link" href="contaco.jsp"><i class="fas fa-users"></i>Contacta con
                                 nosotros</a>
                         </li>
                     </ul>
@@ -51,7 +52,8 @@
             <form action="svModificarUsuario" method="POST">
 
                 <div class="login_formulario-inputs">
-                    <input type="text" name="name" id="usuario"  placeholder="Ingrese su nuevo Nombre" required>
+                    <%usuario usu = (usuario) request.getSession().getAttribute("usuModif");%>
+                    <input type="text" name="name" id="usuario" value="<%=usu.getNombre()%>"  placeholder="Ingrese su nuevo Nombre" required>
                         <input type="password" name="contrasenia" class="pass" id="pass" 
                                placeholder="Ingrese su nueva contraseña" required="">
                 </div>

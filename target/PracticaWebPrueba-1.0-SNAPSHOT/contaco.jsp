@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,7 +20,7 @@
         <nav class="navbar navbar-expand-lg">
             <div class="container-fluid">
                 <div class="menu_header-img"><img src="Img/iconoWeb2.ico" alt=""></div>
-                <a class="navbar-brand" href="index.html">
+                <a class="navbar-brand" href="index.jsp">
                     <h2>Página Principal</h2>
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu"
@@ -40,30 +40,42 @@
     <main>
         <div class="login_formulario">
             <h2 class="login_formulario-h2">Contactanos</h2>
-            <form action="agregar URL" method="post">
-
-                <div class="login_formulario-inputs">
-                    <input type="nombre" name="usuario" id="usuario" 
-                        placeholder="Ingrese su nombre" required>
-                    <input type="email" name="email" id="email"
-                        placeholder="Ingrese su mail" required>
-                        <input type="tel" name="tel" id="tel" 
-                        placeholder="Ingrese su telefono" required>   
-                                            
-                        <select class="select_contacto" name="deporte" id="deporte" required>
+            <form id="contactForm" action="https://formsubmit.co/lautarovillabona.ar@gmail.com" method="post" novalidate>
+               <div class="login_formulario-inputs">
+                    <div class="mb-3">
+                        <input type="text" class="form-control" name="usuario" id="usuario"
+                            placeholder="Ingrese su nombre" required>
+                        <div class="invalid-feedback">El nombre es obligatorio y debe contener al menos 3 caracteres.</div>
+                    </div>
+                    <div class="mb-3">
+                        <input type="email" class="form-control" name="email" id="email"
+                            placeholder="Ingrese su email" required>
+                        <div class="invalid-feedback">Por favor, ingrese un correo válido.</div>
+                    </div>
+                    <div class="mb-3">
+                        <input type="tel" class="form-control" name="tel" id="tel"
+                            placeholder="Ingrese su teléfono" required pattern="[0-9]{8,15}">
+                        <div class="invalid-feedback">El teléfono debe contener entre 8 y 15 dígitos.</div>
+                    </div>
+                    <div class="mb-3">
+                        <select class="form-select" name="deporte" id="deporte" required>
                             <option value="" disabled selected hidden>Seleccione un deporte</option>
-                            <option value="FÃºtbol">Fútbol</option>
+                            <option value="Fútbol">Fútbol</option>
                             <option value="Tenis">Tenis</option>
                             <option value="Padel">Padel</option>
                         </select>
-                        <textarea class="contacto_txt" name="comentario" rows="5" cols="50"  placeholder="Escriba el mensaje" required></textarea>
-
+                        <div class="invalid-feedback">Debe seleccionar un deporte.</div>
+                    </div>
+                    <div class="mb-3">
+                        <textarea class="form-control" name="comentario" rows="5" id="comentario"
+                            placeholder="Escriba el mensaje" required></textarea>
+                        <div class="invalid-feedback">El mensaje no puede estar vacío.</div>
+                    </div>
                 </div>
-
                 
-
-                <form action="">
-                    <button class="login_formulario-boton" type="submit"><i class="fa-solid fa-handshake"></i>Contactar</button>
+                <button class="login_formulario-boton" type="submit"><i class="fa-solid fa-handshake"></i>Contactar</button>
+                        <input type="hidden" name="_next" value="http://localhost:8080/contaco.jsp">
+                        <input type="hidden" name="_captcha" value="false">
                 </form>
                 <form action="index.jsp">
                     <button type="submit" class="login_formulario-boton">Regresar</button>
@@ -73,7 +85,7 @@
     </div>
     <footer class="login_footer">
         <div>
-            <p>&copy; 2024 Mi PÃ¡gina Web. Todos los derechos reservados.</p>
+            <p>&copy; 2024 Mi Página Web. Todos los derechos reservados.</p>
         </div>
     </footer>
 

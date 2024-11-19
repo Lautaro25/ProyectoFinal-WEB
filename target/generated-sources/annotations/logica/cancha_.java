@@ -6,7 +6,7 @@ import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 import logica.reserva;
 
-@Generated(value="EclipseLink-2.7.12.v20230209-rNA", date="2024-11-11T18:44:57")
+@Generated(value="EclipseLink-2.7.12.v20230209-rNA", date="2024-11-19T15:43:21")
 @StaticMetamodel(cancha.class)
 public class cancha_ { 
 

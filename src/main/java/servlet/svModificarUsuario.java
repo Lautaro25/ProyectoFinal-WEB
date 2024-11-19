@@ -30,7 +30,7 @@ public class svModificarUsuario extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-                int idModificar = Integer.parseInt(request.getParameter("idUsuario"));
+        int idModificar = Integer.parseInt(request.getParameter("idUsuario"));
         usuario usu = ctrlLogica.getUsuario(idModificar);
         HttpSession misesion = request.getSession();
         misesion.setAttribute("usuModif", usu);

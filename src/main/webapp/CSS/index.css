@@ -1361,6 +1361,14 @@ i {
     animation: slideDown 0.5s ease forwards, fadeOut 0.5s ease 2.5s forwards;
     z-index: 1000;
 }
+@media screen and (max-width: 500px) {
+.modal_title {
+    font-size: 1.5rem;
+    margin: auto;
+    margin-bottom: 20px;
+}
+}
+
 
 /* Color para cada cartel */
 .success {

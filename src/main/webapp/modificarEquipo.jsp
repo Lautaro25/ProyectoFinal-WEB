@@ -8,7 +8,7 @@
 <%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <!DOCTYPE html>
-<html>
+<html lang="es">
     <head>
          <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27,7 +27,7 @@
         <nav class="navbar navbar-expand-lg">
             <div class="container-fluid">
                 <div class="menu_header-img"><img src="Img/iconoWeb2.ico" alt=""></div>
-                <a class="navbar-brand" href="index.html">
+                <a class="navbar-brand" href="index.jsp">
                     <h2>Página Principal</h2>
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu"
@@ -37,10 +37,7 @@
                 <div class="collapse navbar-collapse justify-content-end" id="menu">
                     <ul class="navbar-nav">
                         <li class="nav-item">
-                            <a class="nav-link nav-li" href="Menú.html"><i class="fas fa-home"></i>Inicio</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link nav-li" href="index.html">Volver</a>
+                            <a class="nav-link nav-li" href="torneo.jsp"><i class="fa-solid fa-arrow-rotate-left"></i> Volver</a>
                         </li>
                     </ul>
                 </div>
@@ -79,7 +76,12 @@
              
          </form>
     </div>
-    </div>                
+    </div>   
+        <footer class="login_footer" style="margin-top: 10%">
+        <div>
+            <p>&copy; 2024 Mi Página Web. Todos los derechos reservados.</p>
+        </div>
+    </footer>
                  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>

@@ -23,7 +23,7 @@
         <nav class="navbar navbar-expand-lg">
             <div class="container-fluid">
                 <div class="menu_header-img"><img src="Img/iconoWeb2.ico" alt=""></div>
-                <a class="navbar-brand" href="index.html">
+                <a class="navbar-brand" href="Menu.jsp">
                     <h2>Página Principal</h2>
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu"
@@ -33,10 +33,7 @@
                 <div class="collapse navbar-collapse justify-content-end" id="menu">
                     <ul class="navbar-nav">
                         <li class="nav-item">
-                            <a class="nav-link nav-li" href="Menú.html"><i class="fas fa-home"></i>Inicio</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link nav-li" href="index.html">Volver</a>
+                            <a class="nav-link nav-li" href="Menu.jsp"><i class="fa-solid fa-arrow-rotate-left"></i> Volver</a>
                         </li>
                     </ul>
                 </div>
@@ -71,31 +68,33 @@
         <div class="form-container">
             <h2 class="form-title">Registrar Equipo y Jugadores</h2>
             
-            <form id="teamPlayerForm" class="form" action='svTorneo' method='POST'>
+                        <form id="teamPlayerForm" class="form" action='svTorneo' method='POST'>
+                
                 <!-- Datos del Equipo -->
                 <div class="form-group mb-3">
                     <label for="teamName" class="form-label">Nombre del Equipo:</label>
-                    <input type="text" id="teamName" name="teamName" class="form-control" required>
+                    <input type="text" id="teamName" name="teamName" class="form-control" >
                     <span id="teamNameError" class="error-message" style="display: none; color: red;"></span>
                 </div>
                 
                 <!-- Jugador 1 -->
                 <div class="form-group mb-3">
                     <label for="player1Name" class="form-label">Nombre del Jugador 1:</label>
-                    <input type="text" id="player1Name" name="player1Name" class="form-control" required>
+                    <input type="text" id="player1Name" name="player1Name" class="form-control">                  
                     <span id="player1NameError" class="error-message" style="display: none; color: red;"></span>
                 </div>
                 
                 <!-- Jugador 2 -->
                 <div class="form-group mb-3">
                     <label for="player2Name" class="form-label">Nombre del Jugador 2:</label>
-                    <input type="text" id="player2Name" name="player2Name" class="form-control" required>
+                    <input type="text" id="player2Name" name="player2Name" class="form-control">                 
                     <span id="player2NameError" class="error-message" style="display: none; color: red;"></span>
                 </div>
 
                 <!-- Botón de Enviar -->
                 <button type="submit" class="btn btn-primary">Registrar Equipo y Jugadores</button>
             </form>
+
         </div>
         
         <!--Seccion para Modificar Equipos y Jugadores-->
@@ -103,6 +102,9 @@
         <p>Ingrese el ID del Equipo que desea modificar</p>
         <form action="svModificarEquipo" method="GET">
         <p><label> ID:         </label><input type="text" name="idEquipoModif" required> </p>
+            <c:if test="${not empty errorMessage}">
+                <p style="color: red; font-size: 15px">${errorMessage}</p>
+            </c:if>
          <button type='submit' class="btn btn-primary">Modificar Equipo </button>
         </form>
 
@@ -159,8 +161,8 @@
             <p>&copy; 2024 Mi Página Web. Todos los derechos reservados.</p>
         </div>
     </footer>
-    <script src="torneo.js"></script>
 
+    <script src="codigo.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>

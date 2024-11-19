@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,7 +28,7 @@
                 <div class="collapse navbar-collapse justify-content-end" id="menu">
                     <ul class="navbar-nav">
                         <li class="nav-item">
-                            <a class="nav-link" href="contaco.html"><i class="fas fa-users"></i>Contacta con nosotros</a>
+                            <a class="nav-link" href="contaco.jsp"><i class="fas fa-users"></i>Contacta con nosotros</a>
                         </li>
                     </ul>
                 </div>
@@ -58,20 +58,23 @@
                         session.removeAttribute("estadoRecuperar");
                     %>
         <div class="login_formulario">
+             <div class="login_formulario-inputs">
             <label for=""><i class="fa-solid fa-unlock"></i></label>
             <h2 class="login_formulario-h2">Recuperar Contraseña</h2>
-            <form action="svRecuperacion" method="POST">
+            <form action="svRecuperacion"  id="register-form" class="needs-validation" method="post" novalidate>
                 <c:if test="${not empty errorMessage}">
                     <p style="color: red; text-align: center; font-size: 18px">${errorMessage}</p>
                 </c:if>
                 <div class="login_formulario-inputs login_formulario-password">
-                    <input type="email" name="mail" id="usuario" required
-                        placeholder="Ingrese su email">
+                    <input type="email" id="email" name="mail" class="form-control" placeholder="Ingrese su email" required>
+                    <div class="invalid-feedback">Por favor ingrese un correo válido.</div>
                 </div>
                     <button class="login_formulario-boton" type="submit">Verificar</button>
             </form>
-                <form action="registro.jsp">
+                <form action="Login.jsp">
                 <button class="login_formulario-boton" type="submit">Regresar</button>
+                </form>
+                </div>
         </div>
     </main>
     <footer class="login_footer">
@@ -83,5 +86,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
+    <script src="codigo.js"></script>
 </body>
 </html>
